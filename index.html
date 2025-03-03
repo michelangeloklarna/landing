@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klarna Developer Tools</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Pixelify+Sans&display=swap">
+    <style>
+        :root {
+            --win95-bg: #008080;
+            --win95-window: #c0c0c0;
+            --win95-border-light: #ffffff;
+            --win95-border-dark: #808080;
+            --win95-border-darker: #000000;
+            --win95-text: #000000;
+            --win95-blue: #000080;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--win95-bg);
+            color: var(--win95-text);
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .win95-window {
+            background-color: var(--win95-window);
+            border: 2px solid;
+            border-color: var(--win95-border-light) var(--win95-border-dark) var(--win95-border-dark) var(--win95-border-light);
+            box-shadow: 2px 2px 0 var(--win95-border-darker);
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .window-title {
+            background-color: var(--win95-blue);
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .title-buttons {
+            display: flex;
+        }
+        
+        .title-button {
+            width: 20px;
+            height: 20px;
+            background-color: var(--win95-window);
+            border: 2px solid;
+            border-color: var(--win95-border-light) var(--win95-border-dark) var(--win95-border-dark) var(--win95-border-light);
+            margin-left: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .window-content {
+            padding: 10px;
+            overflow: auto;
+            max-height: 70vh;
+        }
+        
+        .desktop {
+            width: 100%;
+            height: 100vh;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            grid-gap: 20px;
+            align-content: start;
+        }
+        
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            width: 100px;
+            height: 100px;
+        }
+        
+        .desktop-icon:hover .icon-label {
+            background-color: #000080;
+            color: white;
+        }
+        
+        .icon-image {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 5px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+        }
+        
+        .icon-label {
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px black;
+            padding: 2px 4px;
+        }
+        
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background-color: var(--win95-window);
+            border-top: 2px solid var(--win95-border-light);
+            display: flex;
+            padding: 2px;
+            z-index: 100;
+        }
+        
+        .start-button {
+            display: flex;
+            align-items: center;
+            background-color: var(--win95-window);
+            border: 2px solid;
+            border-color: var(--win95-border-light) var(--win95-border-dark) var(--win95-border-dark) var(--win95-border-light);
+            padding: 0 5px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .start-button img {
+            width: 18px;
+            height: 18px;
+            margin-right: 5px;
+        }
+        
+        .taskbar-time {
+            background-color: var(--win95-window);
+            border: 2px solid;
+            border-color: var(--win95-border-dark) var(--win95-border-light) var(--win95-border-light) var(--win95-border-dark);
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Icons for each tool */
+        .icon-osm {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ffd700" d="M21,19V5c0-1.1-0.9-2-2-2H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3l3.5-4.5l4.5,6H5L8.5,13.5z"/></svg>');
+        }
+        
+        .icon-emd {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%234169e1" d="M14,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8L14,2z M12,18c-2.21,0-4-1.79-4-4s1.79-4,4-4s4,1.79,4,4 S14.21,18,12,18z M12,12c-1.1,0-2,0.9-2,2s0.9,2,2,2s2-0.9,2-2S13.1,12,12,12z"/></svg>');
+        }
+        
+        .icon-payments {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%2332cd32" d="M20,4H4C2.89,4,2.01,4.89,2.01,6L2,18c0,1.11,0.89,2,2,2h16c1.11,0,2-0.89,2-2V6C22,4.89,21.11,4,20,4z M20,18H4v-6h16V18z M20,8H4V6h16V8z"/></svg>');
+        }
+        
+        .icon-lia {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff6347" d="M15,3l2.3,2.3l-2.89,2.87l1.42,1.42L18.7,6.7L21,9V3H15z M3,9l2.3-2.3l2.87,2.89l1.42-1.42L6.7,5.3L9,3H3V9z M9,21 l-2.3-2.3l2.89-2.87l-1.42-1.42L5.3,17.3L3,15v6H9z M21,15l-2.3,2.3l-2.87-2.89l-1.42,1.42l2.89,2.87L15,21h6V15z"/></svg>');
+        }
+        
+        .icon-checkout {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ba55d3" d="M7,18c-1.1,0-1.99,0.9-1.99,2S5.9,22,7,22s2-0.9,2-2S8.1,18,7,18z M17,18c-1.1,0-1.99,0.9-1.99,2s0.89,2,1.99,2s2-0.9,2-2 S18.1,18,17,18z M7.17,14.75L7.2,14.63L8.1,13h10.46l2.35-8H7.5L7.02,2H3v2h2.5l3.24,11.43C7.73,15.79,7,16.76,7,18 c0,1.66,1.34,3,3,3h12v-2H10C8.9,19,8,18.1,8,17C8,16.4,8.18,15.86,8.5,15.5L7.17,14.75z"/></svg>');
+        }
+        
+        @media (max-width: 768px) {
+            .win95-window {
+                width: 95%;
+                max-height: 80vh;
+            }
+            
+            .desktop {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                padding: 10px;
+            }
+            
+            .desktop-icon {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <a class="desktop-icon" href="https://michelangeloklarna.github.io/Klarna-On-Site-Messaging-Gallery/" target="_blank">
+            <div class="icon-image icon-osm"></div>
+            <div class="icon-label">On-Site Messaging Gallery</div>
+        </a>
+        
+        <a class="desktop-icon" href="https://michelangeloklarna.github.io/Klarna-Extra-Merchant-Data-Generator/" target="_blank">
+            <div class="icon-image icon-emd"></div>
+            <div class="icon-label">Extra Merchant Data Generator</div>
+        </a>
+        
+        <a class="desktop-icon" href="https://michelangeloklarna.github.io/Klarna-Payments-Preview-Tool/" target="_blank">
+            <div class="icon-image icon-payments"></div>
+            <div class="icon-label">Payments Preview Tool</div>
+        </a>
+        
+        <a class="desktop-icon" href="https://michelangeloklarna.github.io/kp-lia/" target="_blank">
+            <div class="icon-image icon-lia"></div>
+            <div class="icon-label">KP LIA</div>
+        </a>
+    </div>
+    
+    <div class="win95-window hidden" id="aboutWindow">
+        <div class="window-title">
+            <div>About Klarna Developer Tools</div>
+            <div class="title-buttons">
+                <div class="title-button" onclick="toggleWindow('aboutWindow')">X</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <p><b>Klarna Developer Tools</b></p>
+            <p>A collection of tools for Klarna integration and testing.</p>
+            <p>Created and maintained by Michelangelo</p>
+            <p style="margin-top: 20px;">Double-click on any icon to launch the corresponding tool.</p>
+        </div>
+    </div>
+    
+    <div class="taskbar">
+        <div class="start-button" onclick="toggleWindow('aboutWindow')">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23000' d='M3,3H11V11H3V3M3,13H11V21H3V13M13,3H21V11H13V3M13,13H21V21H13V13Z'/></svg>">
+            Start
+        </div>
+        <div class="taskbar-time" id="taskbarTime">4:20 PM</div>
+    </div>
+    
+    <script>
+        // Update the taskbar time
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Convert 0 to 12
+            document.getElementById('taskbarTime').textContent = `${hours}:${minutes} ${ampm}`;
+        }
+        
+        // Toggle window visibility
+        function toggleWindow(windowId) {
+            const window = document.getElementById(windowId);
+            
+            if (window.classList.contains('hidden')) {
+                window.classList.remove('hidden');
+            } else {
+                window.classList.add('hidden');
+            }
+        }
+        
+        // Initialize
+        updateTime();
+        setInterval(updateTime, 60000); // Update time every minute
+        
+        // Make the window draggable
+        const windows = document.querySelectorAll('.win95-window');
+        windows.forEach(makeWindowDraggable);
+        
+        function makeWindowDraggable(element) {
+            const titleBar = element.querySelector('.window-title');
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            if (titleBar) {
+                titleBar.onmousedown = dragMouseDown;
+            }
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Get mouse position at startup
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                // Call a function when the cursor moves
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // Calculate new position
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // Set element's new position
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function closeDragElement() {
+                // Stop moving when mouse button is released
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+    </script>
+</body>
+</html> 
